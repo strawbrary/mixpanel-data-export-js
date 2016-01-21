@@ -10,11 +10,8 @@
     "analytics"
   ],
   "dependencies": {
-    "amp-extend": "^1.0.1",
-    "blueimp-md5": "^1.1.0",
-    "q": "^1.1.2",
-    "request": "^2.53.0",
-    "xmlhttprequest": ">=1.5.0"
+    "bluebird": "^3.1.1",
+    "needle": "^0.11.0"
   },
   "homepage": "https://github.com/michaelcarter/mixpanel-data-export-js",
   "bugs": {
@@ -51,5 +48,8 @@
     "grunt-shell": "^1.1.1",
     "mocha": "^2.0.1",
     "phantomjs": "~1.9.1"
+  },
+  "engines": {
+    "node": ">= 4.0.0"
   }
 }

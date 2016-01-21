@@ -22,18 +22,6 @@ describe('TopEvents', function() {
         done();
       });
     });
-
-    it('works with a callback', function(done) {
-      this.timeout(10000);
-
-      panel.topEvents({
-        type: 'general'
-      }, function(data) {
-        assert.ok(data)
-        done();
-      });
-    });
-
   });
 
 });

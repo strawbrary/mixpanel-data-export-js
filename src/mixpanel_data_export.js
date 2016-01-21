@@ -1,13 +1,8 @@
-var md5 = require("blueimp-md5").md5;
-var Q = require("q");
-var _ = {
-  extend: require('amp-extend'),
-};
+var crypto = require('crypto');
+var bluebird = require('bluebird');
+var needle = require('needle');
 
-if (typeof window !== "object" && typeof require === "function") {
-  var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-  var request = require('request');
-}
+needle.getAsync = bluebird.promisify(needle.get);
 
 var MixpanelExport = (function() {
 
@@ -19,136 +14,95 @@ var MixpanelExport = (function() {
     this.api_key = this.opts.api_key;
     this.api_secret = this.opts.api_secret;
     this.timeout_after = this.opts.timeout_after || 10;
-    this.isNode = (typeof window !== 'object');
     this._requestNumber = 0;
+
+    needle.defaults({
+      open_timeout: this.opts.open_timeout || 10000,
+      read_timeout: this.opts.read_timeout || 0
+    });
   }
 
-  // Node-only function. Not supported in browser due to lack of JSONP support on export endpoint.
-  MixpanelExport.prototype.export = function(parameters, callback) {
-    if (!this.isNode) throw new Error(this._browserUnsupported("export"));
-    return this.get("export", parameters, callback);
+  MixpanelExport.prototype.export = function(parameters) {
+    return this.get("export", parameters);
   };
 
-  // Node-only function. Not supported in browser due to lack of 'request' module support in-browser.
-  MixpanelExport.prototype.exportStream = function(parameters) {
-    if (!this.isNode) throw new Error(this._browserUnsupported("exportStream"));
-    return request(this._buildRequestURL('export', parameters));
+  MixpanelExport.prototype.engage = function(parameters) {
+    return this.get(["engage"], parameters);
   };
 
-  // Node-only function. Not supported in browser due to lack of JSONP support on engage endpoint.
-  MixpanelExport.prototype.engage = function(parameters, callback) {
-    if (!this.isNode) throw new Error(this._browserUnsupported("engage"));
-    return this.get(["engage"], parameters, callback);
+  MixpanelExport.prototype.annotations = function(parameters) {
+    return this.get("annotations", parameters);
   };
 
-  MixpanelExport.prototype.annotations = function(parameters, callback) {
-    return this.get("annotations", parameters, callback);
+  MixpanelExport.prototype.createAnnotation = function(parameters) {
+    return this.get(["annotations", "create"], parameters);
   };
 
-  MixpanelExport.prototype.createAnnotation = function(parameters, callback) {
-    return this.get(["annotations", "create"], parameters, callback);
+  MixpanelExport.prototype.updateAnnotation = function(parameters) {
+    return this.get(["annotations", "update"], parameters);
   };
 
-  MixpanelExport.prototype.updateAnnotation = function(parameters, callback) {
-    return this.get(["annotations", "update"], parameters, callback);
+  MixpanelExport.prototype.events = function(parameters) {
+    return this.get("events", parameters);
   };
 
-  MixpanelExport.prototype.events = function(parameters, callback) {
-    return this.get("events", parameters, callback);
+  MixpanelExport.prototype.topEvents = function(parameters) {
+    return this.get(["events", "top"], parameters);
   };
 
-  MixpanelExport.prototype.topEvents = function(parameters, callback) {
-    return this.get(["events", "top"], parameters, callback);
+  MixpanelExport.prototype.eventNames = function(parameters) {
+    return this.get(["events", "names"], parameters);
   };
 
-  MixpanelExport.prototype.eventNames = function(parameters, callback) {
-    return this.get(["events", "names"], parameters, callback);
+  MixpanelExport.prototype.eventProperties = function(parameters) {
+    return this.get(["events", "properties"], parameters);
   };
 
-  MixpanelExport.prototype.eventProperties = function(parameters, callback) {
-    return this.get(["events", "properties"], parameters, callback);
+  MixpanelExport.prototype.topEventProperties = function(parameters) {
+    return this.get(["events", "properties", "top"], parameters);
   };
 
-  MixpanelExport.prototype.topEventProperties = function(parameters, callback) {
-    return this.get(["events", "properties", "top"], parameters, callback);
+  MixpanelExport.prototype.eventPropertyValues = function(parameters) {
+    return this.get(["events", "properties", "values"], parameters);
   };
 
-  MixpanelExport.prototype.eventPropertyValues = function(parameters, callback) {
-    return this.get(["events", "properties", "values"], parameters, callback);
+  MixpanelExport.prototype.funnels = function(parameters) {
+    return this.get(["funnels"], parameters);
   };
 
-  MixpanelExport.prototype.funnels = function(parameters, callback) {
-    return this.get(["funnels"], parameters, callback);
+  MixpanelExport.prototype.listFunnels = function(parameters) {
+    return this.get(["funnels", "list"], parameters);
   };
 
-  MixpanelExport.prototype.listFunnels = function(parameters, callback) {
-    return this.get(["funnels", "list"], parameters, callback);
+  MixpanelExport.prototype.segmentation = function(parameters) {
+    return this.get(["segmentation"], parameters);
   };
 
-  MixpanelExport.prototype.segmentation = function(parameters, callback) {
-    return this.get(["segmentation"], parameters, callback);
+  MixpanelExport.prototype.numericSegmentation = function(parameters) {
+    return this.get(["segmentation", "numeric"], parameters);
   };
 
-  MixpanelExport.prototype.numericSegmentation = function(parameters, callback) {
-    return this.get(["segmentation", "numeric"], parameters, callback);
+  MixpanelExport.prototype.sumSegmentation = function(parameters) {
+    return this.get(["segmentation", "sum"], parameters);
   };
 
-  MixpanelExport.prototype.sumSegmentation = function(parameters, callback) {
-    return this.get(["segmentation", "sum"], parameters, callback);
+  MixpanelExport.prototype.averageSegmentation = function(parameters) {
+    return this.get(["segmentation", "average"], parameters);
   };
 
-  MixpanelExport.prototype.averageSegmentation = function(parameters, callback) {
-    return this.get(["segmentation", "average"], parameters, callback);
+  MixpanelExport.prototype.retention = function(parameters) {
+    return this.get(["retention"], parameters);
   };
 
-  MixpanelExport.prototype.retention = function(parameters, callback) {
-    return this.get(["retention"], parameters, callback);
+  MixpanelExport.prototype.addiction = function(parameters) {
+    return this.get(["retention", "addiction"], parameters);
   };
 
-  MixpanelExport.prototype.addiction = function(parameters, callback) {
-    return this.get(["retention", "addiction"], parameters, callback);
-  };
-
-  MixpanelExport.prototype.get = function(method, parameters, callback) {
-    var deferred = Q.defer();
-    var getMethod = ((this.isNode) ? 'node' : 'jsonp');
-
-    this['_'+ getMethod + 'Get'](method, parameters, function(data) {
-      if (callback) {
-        return callback(data);
-      }
-      deferred.resolve(data);
-    });
-
-    return deferred.promise;
-  };
-
-  MixpanelExport.prototype._jsonpGet = function(method, parameters, callback) {
-    var self = this;
-    var requestNumber = this._requestNumber++ // Allows us to make multiple calls in parallel.
-    var requestUrl = this._buildRequestURL(method, parameters) + "&callback=mpSuccess" + requestNumber;
-    var script = document.createElement("script");
-
-    window['mpSuccess' + requestNumber] = function(response) {
-      callback(self._parseResponse(method, parameters, response));
-    };
-    script.src = requestUrl;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  };
-
-  MixpanelExport.prototype._nodeGet = function(method, parameters, callback) {
-    var self = this;
-    var xmlHttpRequest = new XMLHttpRequest;
-
-    xmlHttpRequest.open("get", this._buildRequestURL(method, parameters), true);
-    xmlHttpRequest.onload = function() {
-      callback(self._parseResponse(method, parameters, this.responseText));
-    };
-    xmlHttpRequest.send();
-  };
-
-  MixpanelExport.prototype._browserUnsupported = function(methodName) {
-    return "MixpanelExport: The '" + methodName + "' method cannot be used in your browser.";
+  MixpanelExport.prototype.get = function(method, parameters) {
+    return needle.getAsync(this._buildRequestURL(method, parameters))
+      .then((response) => {
+        return this._parseResponse(method, parameters, response.body);
+      });
   };
 
   // Parses Mixpanel's strange formatting for the export endpoint.
@@ -177,7 +131,7 @@ var MixpanelExport = (function() {
   };
 
   MixpanelExport.prototype._requestParameterString = function(args) {
-    var connection_params = _.extend({
+    var connection_params = Object.assign({
       api_key: this.api_key,
       expire: this._expireAt()
     }, args);
@@ -204,7 +158,7 @@ var MixpanelExport = (function() {
       return "" + key + "=" + (self._stringifyIfArray(connection_params[key]));
     }).join("") + this.api_secret;
 
-    return md5(sig);
+    return crypto.createHash('md5').update(sig).digest('hex');
   };
 
   MixpanelExport.prototype._urlEncode = function(param) {

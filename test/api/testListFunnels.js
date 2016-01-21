@@ -21,17 +21,6 @@ describe('ListFunnels', function() {
         done();
       });
     });
-
-    it('works with a callback', function(done) {
-      this.timeout(10000);
-
-      panel.listFunnels(null, function(data) {
-        callbackData = data;
-        assert.ok(data)
-        done();
-      });
-    });
-
   });
 
 });
