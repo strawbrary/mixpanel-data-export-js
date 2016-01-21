@@ -28,6 +28,9 @@
     "url": "http://mcarter.me/"
   },
   "main": "src/mixpanel_data_export.js",
+  "scripts": {
+    "test": "mocha test"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/michaelcarter/mixpanel-data-export-js.git"
@@ -46,6 +49,7 @@
     "grunt-mocha-phantomjs": "^0.6.0",
     "grunt-mocha-test": "^0.12.4",
     "grunt-shell": "^1.1.1",
-    "mocha": "^2.0.1"
+    "mocha": "^2.0.1",
+    "phantomjs": "~1.9.1"
   }
 }
