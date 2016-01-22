@@ -1,5 +1,5 @@
 {
-  "name": "mixpanel-data-export",
+  "name": "mixpanel-data-export-node",
   "version": "v1.8.2",
   "description": "A wrapper for Mixpanel's data export API. Simply instantiate the class with your API secret and key and then make calls to api methods and get json back.",
   "keywords": [
@@ -13,10 +13,9 @@
     "bluebird": "^3.1.1",
     "needle": "^0.11.0"
   },
-  "homepage": "https://github.com/michaelcarter/mixpanel-data-export-js",
+  "homepage": "https://github.com/strawbrary/mixpanel-data-export-js",
   "bugs": {
-    "url": "https://github.com/michaelcarter/mixpanel-data-export-js/issues",
-    "email": "mike@mcarter.me"
+    "url": "https://github.com/strawbrary/mixpanel-data-export-js/issues"
   },
   "license": "MIT",
   "author": {
@@ -25,12 +24,15 @@
     "url": "http://mcarter.me/"
   },
   "main": "src/mixpanel_data_export.js",
+  "files": [
+    "src/mixpanel_data_export.js"
+  ],
   "scripts": {
     "test": "mocha test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/michaelcarter/mixpanel-data-export-js.git"
+    "url": "https://github.com/strawbrary/mixpanel-data-export-js.git"
   },
   "devDependencies": {
     "split": "^0.3.3",
