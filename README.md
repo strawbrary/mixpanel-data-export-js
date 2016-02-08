@@ -1,5 +1,9 @@
-Mixpanel Data Export (v 1.8.2)
+Mixpanel Data Export
 ==============================
+[![NPM version][npm-img]][npm-url]
+[![Build status][travis-img]][travis-url]
+[![Dependency status][david-img]][david-url]
+
 This is a fork of [michaelcarter/mixpanel-data-export-js](https://github.com/michaelcarter/mixpanel-data-export-js) which has been optimized for Node.js (no browser support). It has just 2 dependencies: [bluebird](https://www.npmjs.com/package/bluebird) and [needle](https://www.npmjs.com/package/needle).
 
 Simply put, this is a JavaScript library that makes [Mixpanel's data export API](https://mixpanel.com/docs/api-documentation/data-export-api#libs-js) easy to use. Simply instantiate the class with your API secret and key and then make calls to api methods and get correctly formatted data back via a promise.
@@ -52,7 +56,7 @@ Every method detailed on [Mixpanel's data export api page](https://mixpanel.com/
 An example usage might be:
 
 ```javascript
-var MixpanelExport = require('mixpanel-data-export');
+var MixpanelExport = require('mixpanel-data-export-node');
 
 var panel = new MixpanelExport({
   api_key: "my_api_key",
@@ -76,3 +80,11 @@ For any other requests (e.g. undocumented API endpoints), you can make raw reque
  - `panel.get(requestType, parameters)` 
 
  `requestType` expects an array forming a path to the endpoint. Taking the "top events" endpoint as an example - it's available at `http://mixpanel.com/api/2.0/events/top/`, so to request it you'd call `panel.get(['events', 'top'], parameters)`.
+
+
+[npm-img]: https://img.shields.io/npm/v/mixpanel-data-export-node.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/mixpanel-data-export-node
+[travis-img]: https://img.shields.io/travis/strawbrary/mixpanel-data-export-js/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/strawbrary/mixpanel-data-export-js
+[david-img]: https://img.shields.io/david/strawbrary/mixpanel-data-export-js.svg?style=flat-square
+[david-url]: https://david-dm.org/strawbrary/mixpanel-data-export-js
