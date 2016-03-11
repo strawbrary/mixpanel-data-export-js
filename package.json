@@ -39,7 +39,7 @@
     "assert": "^1.1.2",
     "browserify": "^13.0.0",
     "grunt": "~0.4.2",
-    "grunt-browserify": "^4.0.1",
+    "grunt-browserify": "^5.0.0",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-compress": "^0.14.0",
