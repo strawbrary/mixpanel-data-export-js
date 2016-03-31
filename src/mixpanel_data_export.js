@@ -26,6 +26,13 @@ var MixpanelExport = (function() {
     return this.get("export", parameters);
   };
 
+  MixpanelExport.prototype.exportStream = function(parameters) {
+    return needle.get(
+      this._buildRequestURL("export", parameters),
+      {compressed: true, parse: true}
+    );
+  };
+
   MixpanelExport.prototype.engage = function(parameters) {
     return this.get(["engage"], parameters);
   };
