@@ -81,6 +81,30 @@ For any other requests (e.g. undocumented API endpoints), you can make raw reque
 
  `requestType` expects an array forming a path to the endpoint. Taking the "top events" endpoint as an example - it's available at `http://mixpanel.com/api/2.0/events/top/`, so to request it you'd call `panel.get(['events', 'top'], parameters)`.
 
+## Streaming Exports
+
+Due to the large size of an export response, it's often appropriate to stream the data instead of waiting for it all:
+
+```javascript
+// Create a stream object
+var exportStream = panel.exportStream({
+    from_date: "2015-03-01",
+    to_date: "2015-03-02"
+});
+
+// Listen on stream data
+exportStream.on('readable', () => {
+  var data;
+  while (data = this.read()) {
+    // handle data
+  }
+});
+
+// Listen for the end of the stream
+exportStream.on('end', () => {
+  // move on to do other stuff
+});
+```
 
 [npm-img]: https://img.shields.io/npm/v/mixpanel-data-export-node.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/mixpanel-data-export-node
