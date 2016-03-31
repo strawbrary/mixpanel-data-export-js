@@ -12,7 +12,6 @@ function MixpanelExport(opts) {
   this.api_key = this.opts.api_key;
   this.api_secret = this.opts.api_secret;
   this.timeout_after = this.opts.timeout_after || 10;
-  this._requestNumber = 0;
 
   needle.defaults({
     open_timeout: this.opts.open_timeout || 10000,
@@ -141,26 +140,20 @@ MixpanelExport.prototype._requestParameterString = function(args) {
     expire: this._expireAt()
   }, args);
   var keys = Object.keys(connection_params).sort();
-  var sig_keys = keys.filter(function(key) {
-    return key !== 'callback'
-  });
+  var sig_keys = keys.filter((key) => key !== 'callback');
 
   return this._getParameterString(keys, connection_params) + '&sig=' + this._getSignature(sig_keys, connection_params);
 };
 
 MixpanelExport.prototype._getParameterString = function(keys, connection_params) {
-  var self = this;
-
-  return keys.map(function(key) {
-    return '' + key + '=' + (self._urlEncode(connection_params[key]));
+  return keys.map((key) => {
+    return '' + key + '=' + (this._urlEncode(connection_params[key]));
   }).join('&');
 };
 
 MixpanelExport.prototype._getSignature = function(keys, connection_params) {
-  var self = this;
-
-  var sig = keys.map(function(key) {
-    return '' + key + '=' + (self._stringifyIfArray(connection_params[key]));
+  var sig = keys.map((key) => {
+    return '' + key + '=' + (this._stringifyIfArray(connection_params[key]));
   }).join('') + this.api_secret;
 
   return crypto.createHash('md5').update(sig).digest('hex');
