@@ -187,4 +187,34 @@ describe('_requestParameterString', function() {
   it('includes a sig parameter', function() {
     assert.ok(result.match(/^.*&sig=.*$/i));
   });
+
+  context('using Basic Auth', function() {
+    var basicAuthPanel = new MixpanelExport({api_secret: "test_secret"});
+
+    before(function() {
+      result = basicAuthPanel._requestParameterString({
+        this: "test",
+        is: "test number two",
+        parameter: ['one', 'two', 'three', 'four'],
+        string: "last parameter"
+      });
+    });
+
+    it('does not include an api_key parameter', function() {
+      assert.ok(!result.match(/^api_key=.*$/i));
+    });
+
+    it('does not include an expire parameter', function() {
+      assert.ok(!result.match(/^.*&expire=.*$/i));
+    });
+
+    it('does not include a sig parameter', function() {
+      assert.ok(!result.match(/^.*&sig=.*$/i));
+    });
+
+    it('includes and URL-encodes user-specified parameters', function() {
+      assert.ok(result.includes('this=test'));
+      assert.ok(result.includes('string=last%20parameter'));
+    });
+  });
 });
