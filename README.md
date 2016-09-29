@@ -77,7 +77,7 @@ A full list of available API methods is detailed on [Mixpanel's data export api 
 ## Undocumented Endpoints
 For any other requests (e.g. undocumented API endpoints), you can make raw requests to the API using `get`. The library will still handle all of param ordering and md5 signature stuff that the API requires, so you'll just need to supply a request type & parameters:
 
- - `panel.get(requestType, parameters)` 
+ - `panel.get(requestType, parameters)`
 
  `requestType` expects an array forming a path to the endpoint. Taking the "top events" endpoint as an example - it's available at `http://mixpanel.com/api/2.0/events/top/`, so to request it you'd call `panel.get(['events', 'top'], parameters)`.
 
@@ -93,7 +93,7 @@ var exportStream = panel.exportStream({
 });
 
 // Listen on stream data
-exportStream.on('readable', () => {
+exportStream.on('readable', function() {
   var data;
   while (data = this.read()) {
     // handle data
