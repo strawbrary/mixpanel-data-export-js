@@ -137,15 +137,20 @@ MixpanelExport.prototype._buildRequestURL = function(method, parameters) {
 };
 
 MixpanelExport.prototype._requestParameterString = function(args) {
-  var connection_params = Object.assign({
-    api_key: this.api_key,
-    expire: this._expireAt()
-  }, args);
+  var connection_params = Object.assign({expire: this._expireAt()}, args);
+  if (!!this.api_key) {
+    connection_params.api_key = this.api_key;
+  }
   var keys = Object.keys(connection_params).sort();
-  var sig_keys = keys.filter((key) => key !== 'callback');
 
-  return this._getParameterString(keys, connection_params) +
-    (!!this.api_key ? ('&sig=' + this._getSignature(sig_keys, connection_params)) : '');
+  // calculate sig only for deprecated key+secret auth
+  var sig = '';
+  if (!!this.api_key) {
+    var sig_keys = keys.filter((key) => key !== 'callback');
+    sig = '&sig=' + this._getSignature(sig_keys, connection_params);
+  }
+
+  return this._getParameterString(keys, connection_params) + sig;
 };
 
 MixpanelExport.prototype._getParameterString = function(keys, connection_params) {
