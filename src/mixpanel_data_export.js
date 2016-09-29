@@ -137,9 +137,10 @@ MixpanelExport.prototype._buildRequestURL = function(method, parameters) {
 };
 
 MixpanelExport.prototype._requestParameterString = function(args) {
-  var connection_params = Object.assign({expire: this._expireAt()}, args);
+  var connection_params = Object.assign({}, args);
   if (!!this.api_key) {
     connection_params.api_key = this.api_key;
+    connection_params.expire = this._expireAt();
   }
   var keys = Object.keys(connection_params).sort();
 
