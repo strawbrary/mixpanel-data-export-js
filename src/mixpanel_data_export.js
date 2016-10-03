@@ -6,8 +6,8 @@ needle.getAsync = bluebird.promisify(needle.get);
 
 function MixpanelExport(opts) {
   this.opts = opts;
-  if (!(this.opts.api_key && this.opts.api_secret)) {
-    throw 'Error: api_key and api_secret must be passed to MixpanelExport constructor.';
+  if (!this.opts.api_secret) {
+    throw 'Error: api_secret must be passed to MixpanelExport constructor.';
   }
   this.api_key = this.opts.api_key;
   this.api_secret = this.opts.api_secret;
@@ -24,10 +24,11 @@ MixpanelExport.prototype.export = function(parameters) {
 };
 
 MixpanelExport.prototype.exportStream = function(parameters) {
-  return needle.get(
-    this._buildRequestURL('export', parameters),
-    {compressed: true, parse: true}
-  );
+  var reqOpts = Object.assign(!!this.api_key ? {} : {username: this.api_secret}, {
+    compressed: true,
+    parse: true,
+  });
+  return needle.get(this._buildRequestURL('export', parameters), reqOpts);
 };
 
 MixpanelExport.prototype.engage = function(parameters) {
@@ -103,7 +104,8 @@ MixpanelExport.prototype.addiction = function(parameters) {
 };
 
 MixpanelExport.prototype.get = function(method, parameters) {
-  return needle.getAsync(this._buildRequestURL(method, parameters))
+  var reqOpts = !!this.api_key ? {} : {username: this.api_secret};
+  return needle.getAsync(this._buildRequestURL(method, parameters), reqOpts)
     .then((response) => {
       return this._parseResponse(method, parameters, response.body);
     });
@@ -135,14 +137,21 @@ MixpanelExport.prototype._buildRequestURL = function(method, parameters) {
 };
 
 MixpanelExport.prototype._requestParameterString = function(args) {
-  var connection_params = Object.assign({
-    api_key: this.api_key,
-    expire: this._expireAt()
-  }, args);
+  var connection_params = Object.assign({}, args);
+  if (!!this.api_key) {
+    connection_params.api_key = this.api_key;
+    connection_params.expire = this._expireAt();
+  }
   var keys = Object.keys(connection_params).sort();
-  var sig_keys = keys.filter((key) => key !== 'callback');
 
-  return this._getParameterString(keys, connection_params) + '&sig=' + this._getSignature(sig_keys, connection_params);
+  // calculate sig only for deprecated key+secret auth
+  var sig = '';
+  if (!!this.api_key) {
+    var sig_keys = keys.filter((key) => key !== 'callback');
+    sig = '&sig=' + this._getSignature(sig_keys, connection_params);
+  }
+
+  return this._getParameterString(keys, connection_params) + sig;
 };
 
 MixpanelExport.prototype._getParameterString = function(keys, connection_params) {
