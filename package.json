@@ -10,7 +10,8 @@
     "analytics"
   ],
   "dependencies": {
-    "needle": "^2.0.1"
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
   },
   "homepage": "https://github.com/strawbrary/mixpanel-data-export-js",
   "bugs": {
