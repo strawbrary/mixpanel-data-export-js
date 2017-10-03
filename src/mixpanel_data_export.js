@@ -1,8 +1,6 @@
 var crypto = require('crypto');
-var bluebird = require('bluebird');
 var needle = require('needle');
 
-needle.getAsync = bluebird.promisify(needle.get);
 
 function MixpanelExport(opts) {
   this.opts = opts;
@@ -105,7 +103,7 @@ MixpanelExport.prototype.addiction = function(parameters) {
 
 MixpanelExport.prototype.get = function(method, parameters) {
   var reqOpts = !!this.api_key ? {} : {username: this.api_secret};
-  return needle.getAsync(this._buildRequestURL(method, parameters), reqOpts)
+  return needle('get', this._buildRequestURL(method, parameters), reqOpts)
     .then((response) => {
       return this._parseResponse(method, parameters, response.body);
     });
