@@ -1,8 +1,16 @@
 var crypto = require('crypto');
-var bluebird = require('bluebird');
-var needle = require('needle');
+var request = require('request');
+var requestPromise = require('request-promise');
 
-needle.getAsync = bluebird.promisify(needle.get);
+function base64Encode(string) {
+  return new Buffer(string).toString('base64');
+}
+
+function authorizationHeader(api_secret) {
+  return {
+    headers : { Authorization : 'Basic ' + base64Encode(api_secret + ":") }
+  }
+}
 
 function MixpanelExport(opts) {
   this.opts = opts;
@@ -12,11 +20,6 @@ function MixpanelExport(opts) {
   this.api_key = this.opts.api_key;
   this.api_secret = this.opts.api_secret;
   this.timeout_after = this.opts.timeout_after || 10;
-
-  needle.defaults({
-    open_timeout: this.opts.open_timeout || 10000,
-    read_timeout: this.opts.read_timeout || 0
-  });
 }
 
 MixpanelExport.prototype.export = function(parameters) {
@@ -24,11 +27,9 @@ MixpanelExport.prototype.export = function(parameters) {
 };
 
 MixpanelExport.prototype.exportStream = function(parameters) {
-  var reqOpts = Object.assign(!!this.api_key ? {} : {username: this.api_secret}, {
-    compressed: true,
-    parse: true,
-  });
-  return needle.get(this._buildRequestURL('export', parameters), reqOpts);
+  var reqOpts = !!this.api_key ? {} : authorizationHeader(this.api_secret);
+  var requestURL = this._buildRequestURL('export', parameters);
+  return request.get(requestURL, reqOpts);
 };
 
 MixpanelExport.prototype.engage = function(parameters) {
@@ -104,10 +105,12 @@ MixpanelExport.prototype.addiction = function(parameters) {
 };
 
 MixpanelExport.prototype.get = function(method, parameters) {
-  var reqOpts = !!this.api_key ? {} : {username: this.api_secret};
-  return needle.getAsync(this._buildRequestURL(method, parameters), reqOpts)
-    .then((response) => {
-      return this._parseResponse(method, parameters, response.body);
+  var reqOpts = !!this.api_key ? {} : authorizationHeader(this.api_secret);
+  var requestURL = this._buildRequestURL(method, parameters);
+
+  return requestPromise.get( requestURL, reqOpts )
+    .then((body) => {
+      return this._parseResponse(method, parameters, body);
     });
 };
 
