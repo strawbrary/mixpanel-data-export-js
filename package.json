@@ -10,8 +10,7 @@
     "analytics"
   ],
   "dependencies": {
-    "bluebird": "^3.1.1",
-    "needle": "^1.0.0"
+    "needle": "^2.0.1"
   },
   "homepage": "https://github.com/strawbrary/mixpanel-data-export-js",
   "bugs": {
@@ -36,8 +35,7 @@
   },
   "devDependencies": {
     "assert": "^1.1.2",
-    "mocha": "^3.0.0",
-    "phantomjs-prebuilt": "~2.1.7"
+    "mocha": "^4.0.1"
   },
   "engines": {
     "node": ">= 4.0.0"
